@@ -19,15 +19,15 @@ pipeline {
     DOCKERHUB_TOKEN=credentials('docker-hub-ci-pat')
     QUAYIO_API_TOKEN=credentials('quayio-repo-api-token')
     GIT_SIGNING_KEY=credentials('484fbca6-9a4f-455e-b9e3-97ac98785f5f')
-    EXT_USER = 'OrcaSlicer'
+    EXT_USER = 'Snapmaker'
     EXT_REPO = 'OrcaSlicer'
-    BUILD_VERSION_ARG = 'ORCASLICER_VERSION'
+    BUILD_VERSION_ARG = 'SNAPMAKER_ORCA_VERSION'
     LS_USER = 'linuxserver'
-    LS_REPO = 'docker-orcaslicer'
-    CONTAINER_NAME = 'orcaslicer'
-    DOCKERHUB_IMAGE = 'linuxserver/orcaslicer'
-    DEV_DOCKERHUB_IMAGE = 'lsiodev/orcaslicer'
-    PR_DOCKERHUB_IMAGE = 'lspipepr/orcaslicer'
+    LS_REPO = 'docker-orcaslicer-snapmaker'
+    CONTAINER_NAME = 'orcaslicer-snapmaker'
+    DOCKERHUB_IMAGE = 'linuxserver/orcaslicer-snapmaker'
+    DEV_DOCKERHUB_IMAGE = 'lsiodev/orcaslicer-snapmaker'
+    PR_DOCKERHUB_IMAGE = 'lspipepr/orcaslicer-snapmaker'
     DIST_IMAGE = 'ubuntu'
     MULTIARCH = 'false'
     CI = 'true'
@@ -98,7 +98,7 @@ pipeline {
           env.CODE_URL = 'https://github.com/' + env.LS_USER + '/' + env.LS_REPO + '/commit/' + env.GIT_COMMIT
           env.DOCKERHUB_LINK = 'https://hub.docker.com/r/' + env.DOCKERHUB_IMAGE + '/tags/'
           env.PULL_REQUEST = env.CHANGE_ID
-          env.TEMPLATED_FILES = 'Jenkinsfile README.md LICENSE .editorconfig ./.github/CONTRIBUTING.md ./.github/FUNDING.yml ./.github/ISSUE_TEMPLATE/config.yml ./.github/ISSUE_TEMPLATE/issue.bug.yml ./.github/ISSUE_TEMPLATE/issue.feature.yml ./.github/PULL_REQUEST_TEMPLATE.md ./.github/workflows/external_trigger_scheduler.yml ./.github/workflows/greetings.yml ./.github/workflows/package_trigger_scheduler.yml ./.github/workflows/call_issue_pr_tracker.yml ./.github/workflows/call_issues_cron.yml ./.github/workflows/permissions.yml ./.github/workflows/external_trigger.yml'
+          env.TEMPLATED_FILES = 'Jenkinsfile README.md LICENSE .editorconfig ./.github/CONTRIBUTING.md ./.github/FUNDING.yml ./.github/ISSUE_TEMPLATE/config.yml ./.github/ISSUE_TEMPLATE/issue.bug.yml ./.github/ISSUE_TEMPLATE/issue.feature.yml ./.github/PULL_REQUEST_TEMPLATE.md ./.github/workflows/publish-container.yml'
           if ( env.SYFT_IMAGE_TAG == null ) {
             env.SYFT_IMAGE_TAG = 'latest'
           }
@@ -595,16 +595,16 @@ pipeline {
         sh "docker buildx build \
           --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
           --label \"org.opencontainers.image.authors=linuxserver.io\" \
-          --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-orcaslicer/packages\" \
-          --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-orcaslicer\" \
-          --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-orcaslicer\" \
+          --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-orcaslicer-snapmaker/packages\" \
+          --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-orcaslicer-snapmaker\" \
+          --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-orcaslicer-snapmaker\" \
           --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
           --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
           --label \"org.opencontainers.image.vendor=linuxserver.io\" \
           --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
           --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-          --label \"org.opencontainers.image.title=Orcaslicer\" \
-          --label \"org.opencontainers.image.description=[Orca Slicer](https://github.com/SoftFever/OrcaSlicer) is an open source slicer for FDM printers. OrcaSlicer is fork of Bambu Studio, it was previously known as BambuStudio-SoftFever, Bambu Studio is forked from PrusaSlicer by Prusa Research, which is from Slic3r by Alessandro Ranellucci and the RepRap community\" \
+          --label \"org.opencontainers.image.title=Snapmaker Orca\" \
+          --label \"org.opencontainers.image.description=[Snapmaker Orca](https://github.com/Snapmaker/OrcaSlicer) is an open source slicer for FDM printers based on OrcaSlicer and maintained by Snapmaker\" \
           --no-cache --pull -t ${IMAGE}:${META_TAG} --platform=linux/amd64 \
           --provenance=true --sbom=true --builder=container --load \
           --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."
@@ -664,16 +664,16 @@ pipeline {
             sh "docker buildx build \
               --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
               --label \"org.opencontainers.image.authors=linuxserver.io\" \
-              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-orcaslicer/packages\" \
-              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-orcaslicer\" \
-              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-orcaslicer\" \
+              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-orcaslicer-snapmaker/packages\" \
+              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-orcaslicer-snapmaker\" \
+              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-orcaslicer-snapmaker\" \
               --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
               --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
               --label \"org.opencontainers.image.vendor=linuxserver.io\" \
               --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
               --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-              --label \"org.opencontainers.image.title=Orcaslicer\" \
-              --label \"org.opencontainers.image.description=[Orca Slicer](https://github.com/SoftFever/OrcaSlicer) is an open source slicer for FDM printers. OrcaSlicer is fork of Bambu Studio, it was previously known as BambuStudio-SoftFever, Bambu Studio is forked from PrusaSlicer by Prusa Research, which is from Slic3r by Alessandro Ranellucci and the RepRap community\" \
+              --label \"org.opencontainers.image.title=Snapmaker Orca\" \
+              --label \"org.opencontainers.image.description=[Snapmaker Orca](https://github.com/Snapmaker/OrcaSlicer) is an open source slicer for FDM printers based on OrcaSlicer and maintained by Snapmaker\" \
               --no-cache --pull -t ${IMAGE}:amd64-${META_TAG} --platform=linux/amd64 \
               --provenance=true --sbom=true --builder=container --load \
               --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."
@@ -726,16 +726,16 @@ pipeline {
             sh "docker buildx build \
               --label \"org.opencontainers.image.created=${GITHUB_DATE}\" \
               --label \"org.opencontainers.image.authors=linuxserver.io\" \
-              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-orcaslicer/packages\" \
-              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-orcaslicer\" \
-              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-orcaslicer\" \
+              --label \"org.opencontainers.image.url=https://github.com/linuxserver/docker-orcaslicer-snapmaker/packages\" \
+              --label \"org.opencontainers.image.documentation=https://docs.linuxserver.io/images/docker-orcaslicer-snapmaker\" \
+              --label \"org.opencontainers.image.source=https://github.com/linuxserver/docker-orcaslicer-snapmaker\" \
               --label \"org.opencontainers.image.version=${EXT_RELEASE_CLEAN}-ls${LS_TAG_NUMBER}\" \
               --label \"org.opencontainers.image.revision=${COMMIT_SHA}\" \
               --label \"org.opencontainers.image.vendor=linuxserver.io\" \
               --label \"org.opencontainers.image.licenses=GPL-3.0-only\" \
               --label \"org.opencontainers.image.ref.name=${COMMIT_SHA}\" \
-              --label \"org.opencontainers.image.title=Orcaslicer\" \
-              --label \"org.opencontainers.image.description=[Orca Slicer](https://github.com/SoftFever/OrcaSlicer) is an open source slicer for FDM printers. OrcaSlicer is fork of Bambu Studio, it was previously known as BambuStudio-SoftFever, Bambu Studio is forked from PrusaSlicer by Prusa Research, which is from Slic3r by Alessandro Ranellucci and the RepRap community\" \
+              --label \"org.opencontainers.image.title=Snapmaker Orca\" \
+              --label \"org.opencontainers.image.description=[Snapmaker Orca](https://github.com/Snapmaker/OrcaSlicer) is an open source slicer for FDM printers based on OrcaSlicer and maintained by Snapmaker\" \
               --no-cache --pull -f Dockerfile.aarch64 -t ${IMAGE}:arm64v8-${META_TAG} --platform=linux/arm64 \
               --provenance=true --sbom=true --builder=container --load \
               --build-arg ${BUILD_VERSION_ARG}=${EXT_RELEASE} --build-arg VERSION=\"${VERSION_TAG}\" --build-arg BUILD_DATE=${GITHUB_DATE} ."

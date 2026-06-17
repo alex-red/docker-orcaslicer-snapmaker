@@ -5,21 +5,17 @@ FROM ghcr.io/linuxserver/baseimage-selkies:debiantrixie
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-ARG ORCASLICER_VERSION
+ARG SNAPMAKER_ORCA_VERSION
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="thelamer"
 
 # title
-ENV TITLE=OrcaSlicer \
+ENV TITLE="Snapmaker Orca" \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     NO_GAMEPAD=true \
     PIXELFLUX_WAYLAND=true
 
 RUN \
-  echo "**** add icon ****" && \
-  curl -o \
-    /usr/share/selkies/www/icon.png \
-    https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/orcaslicer-logo.png && \
   echo "**** add mozilla apt repo ****" && \
   install -d -m 0755 /etc/apt/keyrings && \
   curl -o \
@@ -51,21 +47,39 @@ RUN \
     libgstreamer-plugins-bad1.0 \
     libmspack0 \
     libwebkit2gtk-4.1-0 \
-    libwx-perl && \
-  echo "**** install orcaslicer from appimage ****" && \
-  if [ -z ${ORCASLICER_VERSION+x} ]; then \
-    ORCASLICER_VERSION=$(curl -sX GET "https://api.github.com/repos/OrcaSlicer/OrcaSlicer/releases/latest" \
-    | awk '/tag_name/{print $4;exit}' FS='[""]'); \
+    libwx-perl \
+    unzip && \
+  echo "**** install snapmaker orca from appimage ****" && \
+  SNAPMAKER_ORCA_API="https://api.github.com/repos/Snapmaker/OrcaSlicer" && \
+  if [ -z "${SNAPMAKER_ORCA_VERSION:-}" ]; then \
+    RELEASE_JSON=$(curl -fsSL "${SNAPMAKER_ORCA_API}/releases/latest"); \
+  else \
+    RELEASE_JSON=$(curl -fsSL "${SNAPMAKER_ORCA_API}/releases/tags/${SNAPMAKER_ORCA_VERSION}"); \
   fi && \
-  RELEASE_URL=$(curl -sX GET "https://api.github.com/repos/OrcaSlicer/OrcaSlicer/releases/latest"     | awk '/url/{print $4;exit}' FS='[""]') && \
-  DOWNLOAD_URL=$(curl -sX GET "${RELEASE_URL}" | awk '/browser_download_url.*Ubuntu2404/{print $4;exit}' FS='[""]') && \
+  DOWNLOAD_URL=$(printf "%s" "${RELEASE_JSON}" | awk -F'"' '/browser_download_url.*Snapmaker_Orca_Linux_ubuntu_2404_.*\.zip/{print $4;exit}') && \
+  if [ -z "${DOWNLOAD_URL}" ]; then \
+    echo "No Snapmaker Orca Ubuntu 24.04 Linux zip found for release ${SNAPMAKER_ORCA_VERSION:-latest}"; \
+    exit 1; \
+  fi && \
   cd /tmp && \
   curl -o \
-    /tmp/orca.app -L \
+    /tmp/snapmaker-orca.zip -fL \
     "${DOWNLOAD_URL}" && \
-  chmod +x /tmp/orca.app && \
-  ./orca.app --appimage-extract && \
-  mv squashfs-root /opt/orcaslicer && \
+  unzip -q /tmp/snapmaker-orca.zip -d /tmp/snapmaker-orca && \
+  APPIMAGE=$(find /tmp/snapmaker-orca -maxdepth 1 -type f -name "Snapmaker_Orca_Linux_AppImage_Ubuntu2404_*.AppImage" -print -quit) && \
+  if [ -z "${APPIMAGE}" ]; then \
+    echo "No Snapmaker Orca AppImage found inside downloaded zip"; \
+    exit 1; \
+  fi && \
+  chmod +x "${APPIMAGE}" && \
+  cd /tmp/snapmaker-orca && \
+  "${APPIMAGE}" --appimage-extract && \
+  if [ ! -x squashfs-root/AppRun ]; then \
+    echo "Extracted Snapmaker Orca AppRun is missing or not executable"; \
+    exit 1; \
+  fi && \
+  mv squashfs-root /opt/snapmaker-orca && \
+  cp /opt/snapmaker-orca/Snapmaker_Orca.png /usr/share/selkies/www/icon.png && \
   localedef -i en_GB -f UTF-8 en_GB.UTF-8 && \
   printf "Linuxserver.io version: ${VERSION}\nBuild-date: ${BUILD_DATE}" > /build_version && \
   echo "**** cleanup ****" && \

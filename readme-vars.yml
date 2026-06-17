@@ -1,10 +1,10 @@
 ---
 
 # project information
-project_name: orcaslicer
-project_url: "https://github.com/SoftFever/OrcaSlicer"
-project_logo: "https://raw.githubusercontent.com/linuxserver/docker-templates/master/linuxserver.io/img/orcaslicer-logo.png"
-project_blurb: "[Orca Slicer]({{ project_url }}) is an open source slicer for FDM printers. OrcaSlicer is fork of Bambu Studio, it was previously known as BambuStudio-SoftFever, Bambu Studio is forked from PrusaSlicer by Prusa Research, which is from Slic3r by Alessandro Ranellucci and the RepRap community"
+project_name: orcaslicer-snapmaker
+project_url: "https://github.com/Snapmaker/OrcaSlicer"
+project_logo: "https://raw.githubusercontent.com/Snapmaker/OrcaSlicer/main/resources/images/Snapmaker_Orca_192px.png"
+project_blurb: "[Snapmaker Orca]({{ project_url }}) is an open source slicer for FDM printers based on OrcaSlicer and maintained by Snapmaker."
 project_lsio_github_repo_url: "https://github.com/linuxserver/docker-{{ project_name }}"
 project_categories: "3D Printing"
 project_blurb_optional_extras_enabled: false
@@ -21,8 +21,8 @@ param_volumes:
   - {vol_path: "/config", vol_host_path: "/path/to/config", desc: "Users home directory in the container, stores program settings and files."}
 param_usage_include_ports: true
 param_ports:
-  - {external_port: "3000", internal_port: "3000", port_desc: "Orca Slicer desktop gui HTTP, must be proxied."}
-  - {external_port: "3001", internal_port: "3001", port_desc: "Orca Slicer desktop gui HTTPS."}
+  - {external_port: "3000", internal_port: "3000", port_desc: "Snapmaker Orca desktop gui HTTP, must be proxied."}
+  - {external_port: "3001", internal_port: "3001", port_desc: "Snapmaker Orca desktop gui HTTPS."}
 opt_custom_params:
   - {name: "shm-size", name_compose: "shm_size", value: "1gb", desc: "We set this to 1 gig to prevent modern web browsers from crashing"}
 # Selkies blurb settings
@@ -36,7 +36,7 @@ app_setup_block: |
   * https://yourhost:3001/
 # init diagram
 init_diagram: |
-  "orcaslicer:latest": {
+  "orcaslicer-snapmaker:latest": {
     docker-mods
     base {
       fix-attr +\nlegacy cont-init
@@ -103,7 +103,7 @@ init_diagram: |
   Base Images: {
     "baseimage-selkies:debiantrixie" <- "baseimage-debian:trixie"
   }
-  "orcaslicer:latest" <- Base Images
+  "orcaslicer-snapmaker:latest" <- Base Images
 # changelog
 changelogs:
   - {date: "11.05.26:", desc: "Rebase to Debian Trixie."}

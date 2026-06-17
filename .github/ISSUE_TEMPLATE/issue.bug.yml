@@ -66,10 +66,10 @@ body:
   - type: textarea
     attributes:
       description: |
-        Provide a full docker log, output of "docker logs orcaslicer"
+        Provide a full docker log, output of "docker logs orcaslicer-snapmaker"
       label: Container logs
       placeholder: |
-        Output of `docker logs orcaslicer`
+        Output of `docker logs orcaslicer-snapmaker`
       render: bash
     validations:
       required: true
